@@ -9,6 +9,7 @@ import api.dad.candidate  # noqa: F401 — registers all candidate models
 import api.dad.job  # noqa: F401 — registers JobApplied, Network
 import api.dad.outreach  # noqa: F401 — registers OutreachContact
 import api.dad.sponsor  # noqa: F401 — registers SponsorRegister
+import api.dad.conversation  # noqa: F401 — registers Conversation, Message
 from api.dad.base import Base
 
 config = context.config
