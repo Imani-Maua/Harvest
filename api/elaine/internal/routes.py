@@ -39,7 +39,6 @@ def create_candidate(
 def get_candidate(
     candidate_id: int,
     db: Annotated[Session, Depends(session)],
-    _: Annotated[User, Depends(get_current_user)],
 ):
     return CandidateService.get(candidate_id=candidate_id, db=db)
 
@@ -73,7 +72,6 @@ career_preference_router = APIRouter(
 def get_career_preference(
     candidate_id: int,
     db: Annotated[Session, Depends(session)],
-    _: Annotated[User, Depends(get_current_user)],
 ):
     return CareerPreferenceService.get(candidate_id=candidate_id, db=db)
 
@@ -117,7 +115,6 @@ def create_project(
 def list_projects(
     candidate_id: int,
     db: Annotated[Session, Depends(session)],
-    _: Annotated[User, Depends(get_current_user)],
 ):
     return ProjectService.list(candidate_id=candidate_id, db=db)
 
@@ -127,7 +124,6 @@ def get_project(
     candidate_id: int,
     project_id: int,
     db: Annotated[Session, Depends(session)],
-    _: Annotated[User, Depends(get_current_user)],
 ):
     return ProjectService.get(candidate_id=candidate_id, project_id=project_id, db=db)
 
@@ -173,7 +169,6 @@ def create_skill(
 def list_skills(
     candidate_id: int,
     db: Annotated[Session, Depends(session)],
-    _: Annotated[User, Depends(get_current_user)],
 ):
     return SkillService.list(candidate_id=candidate_id, db=db)
 
@@ -183,7 +178,6 @@ def get_skill(
     candidate_id: int,
     skill_id: int,
     db: Annotated[Session, Depends(session)],
-    _: Annotated[User, Depends(get_current_user)],
 ):
     return SkillService.get(candidate_id=candidate_id, skill_id=skill_id, db=db)
 
@@ -229,7 +223,6 @@ def create_link(
 def list_links(
     candidate_id: int,
     db: Annotated[Session, Depends(session)],
-    _: Annotated[User, Depends(get_current_user)],
 ):
     return SupportingLinkService.list(candidate_id=candidate_id, db=db)
 
@@ -239,7 +232,6 @@ def get_link(
     candidate_id: int,
     link_id: int,
     db: Annotated[Session, Depends(session)],
-    _: Annotated[User, Depends(get_current_user)],
 ):
     return SupportingLinkService.get(candidate_id=candidate_id, link_id=link_id, db=db)
 
@@ -285,7 +277,6 @@ def create_work_experience(
 def list_work_experiences(
     candidate_id: int,
     db: Annotated[Session, Depends(session)],
-    _: Annotated[User, Depends(get_current_user)],
 ):
     return WorkExperienceService.list(candidate_id=candidate_id, db=db)
 
@@ -295,7 +286,6 @@ def get_work_experience(
     candidate_id: int,
     experience_id: int,
     db: Annotated[Session, Depends(session)],
-    _: Annotated[User, Depends(get_current_user)],
 ):
     return WorkExperienceService.get(candidate_id=candidate_id, experience_id=experience_id, db=db)
 
