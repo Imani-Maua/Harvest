@@ -1,5 +1,33 @@
 # Audit Log
 
+## Run: structured JSON logging across all services (2026-11-09)
+
+**Did:** Added structured JSON logging (stdout, stdlib only, no new deps) and per-service try/except error handling to every service in `api/`. Every significant operation now emits a JSON log line; unexpected DB and external API errors are caught, logged, rolled back, and return specific HTTPExceptions instead of bare 500s.
+
+**Read:** `api/main.py`, `api/daisy/routes.py`, `api/daisy/users/service.py`, `api/daisy/tokens/service.py`, `api/daisy/utils/auth_utils.py`, `api/elaine/internal/service.py`, `api/elaine/internal/cv_parser/service.py`, `api/wayne/jobs_applied/service.py`, `api/wayne/network/service.py`, `api/warren/hunter/service.py`, `api/warren/gmail/service.py`, `api/eleanor/new_jobs/ingestion.py`.
+
+**Changed (12 commits, `3f4d2d7`–`76bdd59`):**
+- `api/logger.py` (new) — `_JSONFormatter` + `get_logger(name)` factory; each line is `{"timestamp", "level", "logger", "event", ...context_fields}`
+- `api/daisy/users/service.py` — login attempt/failed/success, password change
+- `api/daisy/tokens/service.py` — token created, expired, invalid; DB error on store
+- `api/daisy/utils/auth_utils.py` — user not found / inactive from token
+- `api/elaine/internal/service.py` — all 6 service classes (Candidate, CareerPreference, Project, Skill, SupportingLink, WorkExperience)
+- `api/elaine/internal/cv_parser/service.py` — invalid type, upload success
+- `api/wayne/jobs_applied/service.py` — CRUD with DB error handling
+- `api/wayne/network/service.py` — CRUD + get_by_company with DB error handling
+- `api/warren/hunter/service.py` — search start/complete, request error, invalid key, save error
+- `api/warren/gmail/service.py` — credentials missing, build failed, draft created
+- `api/eleanor/new_jobs/ingestion.py` — converted from plain stdlib to structured JSON
+- `api/main.py` — global `@app.exception_handler(Exception)` safety net
+
+**External sources:** None.
+
+**Assumed:** Wayne tests had 48 pre-existing failures unrelated to logging (confirmed by stash test). Warren tests: 18/18 still passing.
+
+**Missing:** Nothing.
+
+**Next time:** Nothing extra needed.
+
 ## Run: warren/ tests — 18/18 (2026-11-09)
 
 **Did:** Wrote 18 integration/unit tests for `HunterService`, `_infer_role`, and `GmailService` using SQLite in-memory + sys.modules injection + `unittest.mock.patch`. All 18 pass.
