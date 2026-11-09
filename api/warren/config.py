@@ -5,6 +5,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str
     SECRET_KEY: str
     LOGIN_SECRET: str
+    HUNTER_API_KEY: str = ""
     GEMINI_API_KEY: str = ""
     GMAIL_CLIENT_ID: str = ""
     GMAIL_CLIENT_SECRET: str = ""
