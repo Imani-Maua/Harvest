@@ -7,11 +7,8 @@ from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from api.dad.enums import JobStatus, SponsorshipStatus
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from api.dad.outreach import OutreachContact
 from api.dad.base import Base
+from api.dad.outreach import OutreachContact
 
 
 class JobApplied(Base):
