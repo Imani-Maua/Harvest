@@ -4,7 +4,7 @@ from sqlalchemy import Date, DateTime, Enum, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from api.dad.enums import JobStatus
+from api.dad.enums import JobStatus, SponsorshipStatus
 from api.dad.base import Base
 
 
@@ -21,6 +21,14 @@ class JobApplied(Base):
     job_url: Mapped[str | None] = mapped_column(String, nullable=True)
     applied_date: Mapped[date | None] = mapped_column(Date, nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    source: Mapped[str | None] = mapped_column(String, nullable=True)
+    posted_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    deadline: Mapped[date | None] = mapped_column(Date, nullable=True)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    sponsorship_status: Mapped[SponsorshipStatus | None] = mapped_column(
+        Enum(SponsorshipStatus), nullable=True
+    )
+    sponsorship_evidence: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
