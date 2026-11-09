@@ -12,6 +12,7 @@ from api.daisy.routes import auth_router, limiter
 from api.elaine.routes import elaine_router
 from api.eleanor.routes import eleanor_router
 from api.wayne.routes import wayne_router
+from api.waweru.routes import waweru_router
 
 settings = Settings()
 log = get_logger(__name__)
@@ -47,6 +48,7 @@ app.include_router(auth_router)
 app.include_router(elaine_router)
 app.include_router(eleanor_router)
 app.include_router(wayne_router)
+app.include_router(waweru_router)
 
 
 @app.exception_handler(Exception)
