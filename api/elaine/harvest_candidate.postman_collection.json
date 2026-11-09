@@ -1,0 +1,303 @@
+{
+  "info": {
+    "name": "Harvest — Candidate Profile",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key": "base_url", "value": "http://localhost:8000"},
+    {"key": "access_token", "value": ""},
+    {"key": "candidate_id", "value": ""}
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{"key": "token", "value": "{{access_token}}", "type": "string"}]
+  },
+  "item": [
+    {
+      "name": "Candidates",
+      "item": [
+        {
+          "name": "Create Candidate",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.id) { pm.collectionVariables.set('candidate_id', res.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": "{{base_url}}/candidates",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstname\": \"Elaine\",\n  \"lastname\": \"Imanimaua\",\n  \"email\": \"elaine@example.com\",\n  \"phone\": \"+44 7700 900000\",\n  \"location\": \"London, UK\",\n  \"headline\": \"Senior Software Engineer\",\n  \"summary\": \"Full-stack engineer with 6 years of experience building data-intensive products.\",\n  \"work_authorisation\": \"requires_sponsorship\",\n  \"source\": \"manual\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Candidate",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/candidates/{{candidate_id}}"
+          }
+        },
+        {
+          "name": "Update Candidate",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": "{{base_url}}/candidates/{{candidate_id}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"headline\": \"Lead Software Engineer\",\n  \"location\": \"London, UK\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Candidate",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/candidates/{{candidate_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Work Experiences",
+      "item": [
+        {
+          "name": "Create Work Experience",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": "{{base_url}}/candidates/{{candidate_id}}/work-experiences",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company\": \"Acme Corp\",\n  \"title\": \"Software Engineer\",\n  \"location\": \"London, UK\",\n  \"start_date\": \"2021-06-01\",\n  \"end_date\": null,\n  \"is_current\": true,\n  \"description\": \"Building backend services for the data platform.\",\n  \"achievements\": [\"Reduced API latency by 40%\", \"Led migration to PostgreSQL\"],\n  \"technologies\": [\"Python\", \"FastAPI\", \"PostgreSQL\", \"Docker\"],\n  \"source\": \"manual\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List Work Experiences",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/candidates/{{candidate_id}}/work-experiences"
+          }
+        },
+        {
+          "name": "Get Work Experience",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/candidates/{{candidate_id}}/work-experiences/:experience_id"
+          }
+        },
+        {
+          "name": "Update Work Experience",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": "{{base_url}}/candidates/{{candidate_id}}/work-experiences/:experience_id",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Senior Software Engineer\",\n  \"achievements\": [\"Reduced API latency by 40%\", \"Led migration to PostgreSQL\", \"Mentored 3 junior engineers\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Work Experience",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/candidates/{{candidate_id}}/work-experiences/:experience_id"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Projects",
+      "item": [
+        {
+          "name": "Create Project",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": "{{base_url}}/candidates/{{candidate_id}}/projects",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Harvest\",\n  \"description\": \"AI-powered personal job hunting tool.\",\n  \"url\": \"https://mauaimani.com\",\n  \"repo_url\": \"https://github.com/Imani-Maua/Harvest\",\n  \"start_date\": \"2026-10-01\",\n  \"end_date\": null,\n  \"technologies\": [\"Python\", \"FastAPI\", \"React\", \"PostgreSQL\", \"Gemini\"],\n  \"highlights\": [\"Automated job discovery\", \"CV parsing with AI\"],\n  \"source\": \"manual\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List Projects",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/candidates/{{candidate_id}}/projects"
+          }
+        },
+        {
+          "name": "Get Project",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/candidates/{{candidate_id}}/projects/:project_id"
+          }
+        },
+        {
+          "name": "Update Project",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": "{{base_url}}/candidates/{{candidate_id}}/projects/:project_id",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"AI-powered personal job hunting tool — built for one.\",\n  \"highlights\": [\"Automated job discovery\", \"CV parsing with AI\", \"Outreach draft generation\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Project",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/candidates/{{candidate_id}}/projects/:project_id"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Skills",
+      "item": [
+        {
+          "name": "Create Skill",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": "{{base_url}}/candidates/{{candidate_id}}/skills",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Python\",\n  \"category\": \"language\",\n  \"proficiency\": \"advanced\",\n  \"years_experience\": 5,\n  \"source\": \"manual\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List Skills",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/candidates/{{candidate_id}}/skills"
+          }
+        },
+        {
+          "name": "Get Skill",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/candidates/{{candidate_id}}/skills/:skill_id"
+          }
+        },
+        {
+          "name": "Update Skill",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": "{{base_url}}/candidates/{{candidate_id}}/skills/:skill_id",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"proficiency\": \"expert\",\n  \"years_experience\": 6\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Skill",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/candidates/{{candidate_id}}/skills/:skill_id"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Career Preference",
+      "item": [
+        {
+          "name": "Get Career Preference",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/candidates/{{candidate_id}}/career-preference"
+          }
+        },
+        {
+          "name": "Upsert Career Preference",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": "{{base_url}}/candidates/{{candidate_id}}/career-preference",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"desired_titles\": [\"Senior Software Engineer\", \"Staff Engineer\"],\n  \"desired_industries\": [\"Fintech\", \"Developer Tools\"],\n  \"desired_locations\": [\"London\", \"Remote\"],\n  \"remote_preference\": \"hybrid\",\n  \"salary_min\": 80000,\n  \"salary_max\": 120000,\n  \"salary_currency\": \"GBP\",\n  \"open_to_contract\": false,\n  \"open_to_parttime\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Career Preference",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/candidates/{{candidate_id}}/career-preference"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Links",
+      "item": [
+        {
+          "name": "Create Link",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": "{{base_url}}/candidates/{{candidate_id}}/links",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"link_type\": \"github\",\n  \"label\": \"GitHub\",\n  \"url\": \"https://github.com/Imani-Maua\",\n  \"source\": \"manual\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List Links",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/candidates/{{candidate_id}}/links"
+          }
+        },
+        {
+          "name": "Get Link",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/candidates/{{candidate_id}}/links/:link_id"
+          }
+        },
+        {
+          "name": "Update Link",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": "{{base_url}}/candidates/{{candidate_id}}/links/:link_id",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"Personal GitHub\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Link",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/candidates/{{candidate_id}}/links/:link_id"
+          }
+        }
+      ]
+    }
+  ]
+}
