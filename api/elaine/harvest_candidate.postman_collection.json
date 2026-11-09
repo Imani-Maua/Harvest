@@ -298,6 +298,32 @@
           }
         }
       ]
+    },
+    {
+      "name": "CV",
+      "item": [
+        {
+          "name": "Upload CV",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/cv/upload",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "PDF or Word document (.pdf, .doc, .docx)"
+                }
+              ]
+            },
+            "description": "Upload a CV file (PDF or Word). Returns filename, content_type, and size_bytes. File type is validated — only .pdf, .doc, and .docx are accepted."
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }
