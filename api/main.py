@@ -1,9 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
+from api.logger import get_logger
 from api.warren.config import Settings
 from api.daisy.routes import auth_router, limiter
 from api.elaine.routes import elaine_router
@@ -11,6 +13,7 @@ from api.eleanor.routes import eleanor_router
 from api.wayne.routes import wayne_router
 
 settings = Settings()
+log = get_logger(__name__)
 
 app = FastAPI(title="Harvest", version="0.1.0")
 
@@ -30,6 +33,19 @@ app.include_router(auth_router)
 app.include_router(elaine_router)
 app.include_router(eleanor_router)
 app.include_router(wayne_router)
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    log.error(
+        "unhandled_exception",
+        extra={"path": request.url.path, "method": request.method, "error": str(exc)},
+        exc_info=exc,
+    )
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "An unexpected error occurred"},
+    )
 
 
 @app.get("/health")
