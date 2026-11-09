@@ -65,3 +65,17 @@ class HiringRole(str, Enum):
     engineering_manager = "engineering_manager"
     head_of_engineering = "head_of_engineering"
     hiring_manager = "hiring_manager"
+
+
+class WorkArrangement(str, Enum):
+    hybrid = "hybrid"
+    in_person = "in_person"
+    remote = "remote"
+
+
+class EmploymentType(str, Enum):
+    full_time = "full_time"
+    part_time = "part_time"
+    internship = "internship"
+    fellowship = "fellowship"
+    research = "research"
