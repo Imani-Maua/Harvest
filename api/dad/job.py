@@ -5,6 +5,10 @@ from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from api.dad.enums import JobStatus, SponsorshipStatus
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from api.dad.outreach import OutreachContact
 from api.dad.base import Base
 
 
@@ -36,6 +40,9 @@ class JobApplied(Base):
 
     network: Mapped["Network | None"] = relationship(
         "Network", back_populates="job_applied", uselist=False, cascade="all, delete-orphan"
+    )
+    outreach_contacts: Mapped[list[OutreachContact]] = relationship(
+        "OutreachContact", back_populates="job_applied", cascade="all, delete-orphan"
     )
 
 
