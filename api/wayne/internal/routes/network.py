@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from api.dad.auth import User
 from api.dad.session import session
 from api.daisy.utils.auth_utils import get_current_user
-from api.wayne.network.schema import NetworkCreate, NetworkOut, NetworkUpdate
+from api.wayne.network.schema import ContactOut, NetworkCreate, NetworkOut, NetworkUpdate
 from api.wayne.network.service import NetworkService
 
 network_router = APIRouter(prefix="/network", tags=["Network"])
@@ -56,3 +56,12 @@ def delete_network(
     _: Annotated[User, Depends(get_current_user)],
 ):
     NetworkService.delete(network_id=network_id, db=db)
+
+
+@network_router.get("/by-company/{company}", response_model=list[ContactOut])
+def get_contacts_by_company(
+    company: str,
+    db: Annotated[Session, Depends(session)],
+    _: Annotated[User, Depends(get_current_user)],
+):
+    return NetworkService.get_by_company(company=company, db=db)
