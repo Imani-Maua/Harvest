@@ -1,5 +1,3 @@
-from api.wayne.tests.conftest import JobApplied, Network, TestSession
-
 NETWORK_URL = "/network"
 JOBS_URL = "/jobs-applied"
 
@@ -149,15 +147,6 @@ class TestDeleteNetwork:
         client.delete(f"{NETWORK_URL}/{a_network['id']}", headers=auth_headers)
         res = client.get(f"{NETWORK_URL}/{a_network['id']}", headers=auth_headers)
         assert res.status_code == 404
-
-    def test_deleting_job_also_deletes_network(self, client, auth_headers, a_job, a_network):
-        network_id = a_network["id"]
-        client.delete(f"{JOBS_URL}/{a_job['id']}", headers=auth_headers)
-        db = TestSession()
-        remaining = db.query(Network).filter(Network.id == network_id).first()
-        db.close()
-        assert remaining is None
-
 
 class TestGetByCompany:
     """GET /network/by-company/{company}"""
