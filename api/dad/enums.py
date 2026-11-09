@@ -51,3 +51,11 @@ class JobStatus(str, Enum):
     in_pipeline = "in_pipeline"
     rejected = "rejected"
     offered = "offered"
+
+
+class SponsorshipStatus(str, Enum):
+    confirmed = "confirmed"
+    explicitly_unavailable = "explicitly_unavailable"
+    possible = "possible"
+    no_info = "no_info"
+    requires_clarification = "requires_clarification"
