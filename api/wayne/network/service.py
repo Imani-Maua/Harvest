@@ -1,8 +1,8 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from api.dad.job import Network
-from api.wayne.network.schema import NetworkCreate, NetworkUpdate
+from api.dad.job import JobApplied, Network
+from api.wayne.network.schema import ContactOut, NetworkCreate, NetworkUpdate
 
 
 class NetworkService:
@@ -49,3 +49,22 @@ class NetworkService:
         network = NetworkService.get(network_id, db)
         db.delete(network)
         db.commit()
+
+    @staticmethod
+    def get_by_company(company: str, db: Session) -> list[ContactOut]:
+        networks = (
+            db.query(Network)
+            .join(JobApplied, Network.job_applied_id == JobApplied.id)
+            .filter(JobApplied.company == company)
+            .all()
+        )
+        contacts: list[ContactOut] = []
+        for network in networks:
+            if network.hiring_manager:
+                contacts.append(ContactOut(name=network.hiring_name, email=network.hiring_manager, role="hiring_manager"))
+            if network.technical_recruiter:
+                contacts.append(ContactOut(name=network.technical_name, email=network.technical_recruiter, role="technical_recruiter"))
+            if network.peers:
+                for peer_email in network.peers:
+                    contacts.append(ContactOut(name=network.peer_name, email=peer_email, role="peer"))
+        return contacts
