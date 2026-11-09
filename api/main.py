@@ -4,9 +4,10 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
-from api.config.config import Settings
+from api.warren.config import Settings
 from api.daisy.routes import auth_router, limiter
 from api.elaine.routes import elaine_router
+from api.eleanor.routes import eleanor_router
 from api.wayne.routes import wayne_router
 
 settings = Settings()
@@ -27,6 +28,7 @@ app.add_middleware(
 
 app.include_router(auth_router)
 app.include_router(elaine_router)
+app.include_router(eleanor_router)
 app.include_router(wayne_router)
 
 
