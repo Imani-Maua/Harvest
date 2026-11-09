@@ -59,3 +59,9 @@ class SponsorshipStatus(str, Enum):
     possible = "possible"
     no_info = "no_info"
     requires_clarification = "requires_clarification"
+
+
+class HiringRole(str, Enum):
+    engineering_manager = "engineering_manager"
+    head_of_engineering = "head_of_engineering"
+    hiring_manager = "hiring_manager"
