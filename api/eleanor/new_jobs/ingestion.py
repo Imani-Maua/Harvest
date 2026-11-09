@@ -6,7 +6,7 @@ from api.logger import get_logger
 from api.dad.job import JobApplied
 from api.eleanor.new_jobs.base import JobAdapter, JobAppliedCreate
 from api.eleanor.new_jobs.dedup import deduplicate
-from api.eleanor.new_jobs.sponsorship import classify_sponsorship, download_uk_sponsors
+from api.eleanor.new_jobs.sponsorship import classify_sponsorship, get_uk_sponsors
 from api.eleanor.new_jobs.adapters.greenhouse import GreenhouseAdapter
 from api.eleanor.new_jobs.adapters.lever import LeverAdapter
 from api.eleanor.new_jobs.adapters.ashby import AshbyAdapter
@@ -28,7 +28,7 @@ ADAPTERS: list[Type[JobAdapter]] = [
 
 def run_ingestion(db: Session) -> dict:
     log.info("ingestion_started")
-    uk_sponsors = download_uk_sponsors()
+    uk_sponsors = get_uk_sponsors(db)
     log.info("uk_sponsors_loaded", extra={"count": len(uk_sponsors)})
 
     fetched: list[JobAppliedCreate] = []
