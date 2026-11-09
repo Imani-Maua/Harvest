@@ -1,8 +1,8 @@
-import logging
 from typing import Type
 
 from sqlalchemy.orm import Session
 
+from api.logger import get_logger
 from api.dad.job import JobApplied
 from api.eleanor.new_jobs.base import JobAdapter, JobAppliedCreate
 from api.eleanor.new_jobs.dedup import deduplicate
@@ -14,7 +14,7 @@ from api.eleanor.new_jobs.adapters.adzuna import AdzunaAdapter
 from api.eleanor.new_jobs.adapters.reed import ReedAdapter
 from api.eleanor.new_jobs.adapters.jooble import JoobleAdapter
 
-log = logging.getLogger(__name__)
+log = get_logger(__name__)
 
 ADAPTERS: list[Type[JobAdapter]] = [
     GreenhouseAdapter,
@@ -27,9 +27,9 @@ ADAPTERS: list[Type[JobAdapter]] = [
 
 
 def run_ingestion(db: Session) -> dict:
-    log.info("Downloading UK sponsor register...")
+    log.info("ingestion_started")
     uk_sponsors = download_uk_sponsors()
-    log.info(f"UK sponsor register loaded: {len(uk_sponsors)} entries")
+    log.info("uk_sponsors_loaded", extra={"count": len(uk_sponsors)})
 
     fetched: list[JobAppliedCreate] = []
     adapter_errors: dict[str, str] = {}
@@ -39,15 +39,15 @@ def run_ingestion(db: Session) -> dict:
         try:
             adapter = adapter_cls()
             jobs = adapter.fetch(db=db)
-            log.info(f"{name}: fetched {len(jobs)} jobs")
+            log.info("adapter_fetch_complete", extra={"adapter": name, "jobs_fetched": len(jobs)})
             fetched.extend(jobs)
         except Exception as exc:
-            log.error(f"{name} failed: {exc}")
+            log.error("adapter_fetch_failed", extra={"adapter": name, "error": str(exc)})
             adapter_errors[name] = str(exc)
 
-    log.info(f"Total fetched before dedup: {len(fetched)}")
+    log.info("ingestion_dedup_start", extra={"total_fetched": len(fetched)})
     new_jobs = deduplicate(fetched, db)
-    log.info(f"New after dedup: {len(new_jobs)}")
+    log.info("ingestion_dedup_complete", extra={"new_jobs": len(new_jobs), "skipped": len(fetched) - len(new_jobs)})
 
     saved = 0
     for job_data in new_jobs:
@@ -74,8 +74,15 @@ def run_ingestion(db: Session) -> dict:
         db.add(job)
         saved += 1
 
-    db.commit()
+    try:
+        db.commit()
+    except Exception as exc:
+        db.rollback()
+        log.error("ingestion_commit_failed", extra={"error": str(exc)})
+        from fastapi import HTTPException
+        raise HTTPException(status_code=500, detail="Failed to save ingested jobs")
 
+    log.info("ingestion_complete", extra={"fetched": len(fetched), "saved": saved, "skipped": len(fetched) - saved, "adapter_errors": len(adapter_errors)})
     return {
         "fetched": len(fetched),
         "new": saved,
