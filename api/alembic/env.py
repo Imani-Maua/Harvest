@@ -3,7 +3,7 @@ from logging.config import fileConfig
 from sqlalchemy import create_engine, pool
 from alembic import context
 
-from api.config.config import Settings
+from api.warren.config import Settings
 import api.dad.auth  # noqa: F401 — registers User, AccessToken
 import api.dad.candidate  # noqa: F401 — registers all candidate models
 import api.dad.job  # noqa: F401 — registers JobApplied, Network
