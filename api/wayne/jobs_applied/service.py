@@ -38,7 +38,9 @@ class JobAppliedService:
 
     @staticmethod
     def update(job_id: int, body: JobAppliedUpdate, db: Session) -> JobApplied:
+        from api.dad.enums import JobStatus
         job = JobAppliedService.get(job_id, db)
+        previous_status = job.job_status
         try:
             for field, value in body.model_dump(exclude_unset=True).items():
                 setattr(job, field, value)
@@ -49,6 +51,11 @@ class JobAppliedService:
             log.error("job_update_failed", extra={"job_id": job_id, "error": str(exc)})
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to update job application")
         log.info("job_updated", extra={"job_id": job_id})
+
+        if previous_status != JobStatus.applied and job.job_status == JobStatus.applied:
+            from api.waweru.trigger import on_job_applied
+            on_job_applied(job_id=job_id, db=db)
+
         return job
 
     @staticmethod
