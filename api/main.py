@@ -7,6 +7,7 @@ from slowapi.middleware import SlowAPIMiddleware
 
 from api.logger import get_logger
 from api.warren.config import Settings
+from api.warren.scheduler import build_scheduler
 from api.daisy.routes import auth_router, limiter
 from api.elaine.routes import elaine_router
 from api.eleanor.routes import eleanor_router
@@ -16,6 +17,19 @@ settings = Settings()
 log = get_logger(__name__)
 
 app = FastAPI(title="Harvest", version="0.1.0")
+_scheduler = build_scheduler()
+
+
+@app.on_event("startup")
+def start_scheduler():
+    _scheduler.start()
+    log.info("scheduler_started")
+
+
+@app.on_event("shutdown")
+def stop_scheduler():
+    _scheduler.shutdown(wait=False)
+    log.info("scheduler_stopped")
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
