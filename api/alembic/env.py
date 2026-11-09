@@ -7,6 +7,7 @@ from api.warren.config import Settings
 import api.dad.auth  # noqa: F401 — registers User, AccessToken
 import api.dad.candidate  # noqa: F401 — registers all candidate models
 import api.dad.job  # noqa: F401 — registers JobApplied, Network
+import api.dad.outreach  # noqa: F401 — registers OutreachContact
 from api.dad.base import Base
 
 config = context.config
