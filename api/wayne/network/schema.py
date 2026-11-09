@@ -1,6 +1,14 @@
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, EmailStr
+
+ContactRole = Literal["hiring_manager", "technical_recruiter", "peer"]
+
+
+class ContactOut(BaseModel):
+    name: Optional[str]
+    email: str
+    role: ContactRole
 
 
 class NetworkCreate(BaseModel):
