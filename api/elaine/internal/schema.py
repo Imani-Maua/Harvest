@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from typing import List, Optional
 from pydantic import BaseModel, ConfigDict
-from api.dad.enums import EvidenceSource, WorkAuthorisation, RemotePreference, SkillCategory, SkillProficiency, LinkType
+from api.dad.enums import EvidenceSource, WorkAuthorisation, RemotePreference, SkillCategory, SkillProficiency, LinkType, WorkArrangement, EmploymentType
 
 
 class CandidateCreate(BaseModel):
@@ -178,6 +178,8 @@ class WorkExperienceCreate(BaseModel):
     achievements: Optional[List[str]] = None
     technologies: Optional[List[str]] = None
     source: EvidenceSource = EvidenceSource.manual
+    work_arrangement: Optional[WorkArrangement] = None
+    employment_type: Optional[EmploymentType] = None
 
 
 class WorkExperienceUpdate(BaseModel):
@@ -191,6 +193,8 @@ class WorkExperienceUpdate(BaseModel):
     achievements: Optional[List[str]] = None
     technologies: Optional[List[str]] = None
     source: Optional[EvidenceSource] = None
+    work_arrangement: Optional[WorkArrangement] = None
+    employment_type: Optional[EmploymentType] = None
 
 
 class WorkExperienceOut(BaseModel):
@@ -208,6 +212,8 @@ class WorkExperienceOut(BaseModel):
     achievements: Optional[List[str]]
     technologies: Optional[List[str]]
     source: EvidenceSource
+    work_arrangement: Optional[WorkArrangement]
+    employment_type: Optional[EmploymentType]
 
 
 class CVUploadOut(BaseModel):
