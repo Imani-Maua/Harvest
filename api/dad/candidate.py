@@ -11,6 +11,8 @@ from api.dad.enums import (
     SkillCategory,
     SkillProficiency,
     LinkType,
+    WorkArrangement,
+    EmploymentType,
 )
 from api.dad.base import Base
 
@@ -71,6 +73,12 @@ class WorkExperience(Base):
     technologies: Mapped[list[str] | None] = mapped_column(ARRAY(String), nullable=True)
     source: Mapped[EvidenceSource] = mapped_column(
         Enum(EvidenceSource), default=EvidenceSource.manual, nullable=False
+    )
+    work_arrangement: Mapped[WorkArrangement | None] = mapped_column(
+        Enum(WorkArrangement), nullable=True
+    )
+    employment_type: Mapped[EmploymentType | None] = mapped_column(
+        Enum(EmploymentType), nullable=True
     )
 
     candidate: Mapped["Candidate"] = relationship("Candidate", back_populates="work_experiences")
