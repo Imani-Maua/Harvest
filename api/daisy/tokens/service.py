@@ -7,7 +7,7 @@ from jose import jwt, JWTError, ExpiredSignatureError
 from sqlalchemy import insert
 from sqlalchemy.orm import Session
 
-from api.config.config import Settings
+from api.warren.config import Settings
 from api.dad.auth import AccessToken
 from api.daisy.tokens.schema import Payload
 
