@@ -108,8 +108,6 @@ _mock_dad_job.JobApplied = JobApplied
 _mock_dad_job.Network = Network
 sys.modules["api.dad.job"] = _mock_dad_job
 
-sys.modules["api.dad"] = types.ModuleType("api.dad")
-
 # ── 6. Now safe to import app code ───────────────────────────────────────────
 from api.daisy.routes import auth_router, limiter as _route_limiter  # noqa: E402
 from api.daisy.utils.password_utils import hash_password              # noqa: E402
