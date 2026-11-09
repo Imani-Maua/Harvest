@@ -5,7 +5,7 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 from sqlalchemy.orm import Session
 
-from api.config.config import Settings
+from api.warren.config import Settings
 from api.daisy.users.schema import LoginRequest, TokenOut, UserOut, NewPassword
 from api.daisy.users.service import UserService
 from api.daisy.utils.auth_utils import get_current_user
