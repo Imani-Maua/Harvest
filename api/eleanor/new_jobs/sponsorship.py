@@ -4,6 +4,7 @@ import io
 import re
 
 import requests
+from sqlalchemy.orm import Session
 
 from api.dad.enums import SponsorshipStatus
 
@@ -58,6 +59,14 @@ def download_uk_sponsors() -> set[str]:
         return sponsors
     except Exception:
         return set()
+
+
+def get_uk_sponsors(db: Session) -> set[str]:
+    from api.eleanor.sponsor_refresh import get_uk_sponsors as _from_db
+    cached = _from_db(db)
+    if cached:
+        return cached
+    return download_uk_sponsors()
 
 
 def classify_sponsorship(
