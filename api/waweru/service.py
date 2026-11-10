@@ -25,6 +25,20 @@ def _log(level: str, event: str, **kwargs) -> str:
     })
 
 
+def _extract_error_message(exc: Exception) -> str:
+    try:
+        from google.genai import errors as genai_errors
+        if isinstance(exc, genai_errors.APIError):
+            msg = exc.message if hasattr(exc, "message") else str(exc)
+            # Pull just the human-readable message from the JSON if present
+            if isinstance(exc.details, dict):
+                msg = exc.details.get("error", {}).get("message", msg)
+            return msg
+    except Exception:
+        pass
+    return str(exc)
+
+
 def _sse(payload: dict) -> str:
     return f"data: {json.dumps(payload)}\n\n"
 
@@ -132,4 +146,5 @@ def chat_stream(conversation_id: int | None, user_message: str, db: Session) -> 
     except Exception as exc:
         logger.error(_log("error", "chat_stream_failed", error=str(exc)))
         db.rollback()
-        yield _sse({"error": str(exc), "done": True})
+        error_msg = _extract_error_message(exc)
+        yield _sse({"error": error_msg, "done": True})
