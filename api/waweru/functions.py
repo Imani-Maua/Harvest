@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 
 from api.dad.job import JobApplied
+from api.dad.candidate import Candidate, WorkExperience, Project, Skill, CareerPreference, SupportingLink
 from api.dad.enums import JobStatus
 
 logger = logging.getLogger(__name__)
@@ -21,6 +22,11 @@ def _log(level: str, event: str, **kwargs) -> str:
 
 
 FUNCTION_DECLARATIONS = [
+    {
+        "name": "get_my_profile",
+        "description": "Get Elaine's full profile from the database — work experience, projects, skills, career preferences, and links.",
+        "parameters": {"type": "object", "properties": {}, "required": []},
+    },
     {
         "name": "add_to_watchlist",
         "description": "Add a job to Elaine's watch list given a job URL, company name, and job title.",
@@ -52,6 +58,65 @@ FUNCTION_DECLARATIONS = [
         },
     },
 ]
+
+
+def get_my_profile(db: Session) -> dict:
+    logger.info(_log("info", "fn_get_my_profile"))
+    candidate = db.query(Candidate).first()
+    if not candidate:
+        return {"error": "No candidate profile found."}
+
+    experiences = db.query(WorkExperience).filter(WorkExperience.candidate_id == candidate.id).all()
+    projects = db.query(Project).filter(Project.candidate_id == candidate.id).all()
+    skills = db.query(Skill).filter(Skill.candidate_id == candidate.id).all()
+    preference = db.query(CareerPreference).filter(CareerPreference.candidate_id == candidate.id).first()
+    links = db.query(SupportingLink).filter(SupportingLink.candidate_id == candidate.id).all()
+
+    return {
+        "name": f"{candidate.firstname} {candidate.lastname}",
+        "email": candidate.email,
+        "location": candidate.location,
+        "headline": candidate.headline,
+        "summary": candidate.summary,
+        "work_authorisation": candidate.work_authorisation,
+        "work_experience": [
+            {
+                "company": e.company,
+                "title": e.title,
+                "location": e.location,
+                "start_date": str(e.start_date) if e.start_date else None,
+                "end_date": str(e.end_date) if e.end_date else None,
+                "is_current": e.is_current,
+                "description": e.description,
+                "achievements": e.achievements,
+                "technologies": e.technologies,
+            }
+            for e in experiences
+        ],
+        "projects": [
+            {
+                "name": p.name,
+                "description": p.description,
+                "technologies": p.technologies,
+                "url": p.url,
+            }
+            for p in projects
+        ],
+        "skills": [
+            {"name": s.name, "category": s.category, "proficiency": s.proficiency}
+            for s in skills
+        ],
+        "career_preferences": {
+            "desired_titles": preference.desired_titles if preference else [],
+            "desired_locations": preference.desired_locations if preference else [],
+            "remote_preference": preference.remote_preference if preference else None,
+            "salary_min": preference.salary_min if preference else None,
+            "salary_currency": preference.salary_currency if preference else None,
+            "open_to_relocation": preference.open_to_relocation if preference else None,
+            "notes": preference.notes if preference else None,
+        } if preference else {},
+        "links": [{"type": l.link_type, "url": l.url} for l in links],
+    }
 
 
 def add_to_watchlist(company: str, job_title: str, job_url: str, db: Session, location: str = "") -> dict:
