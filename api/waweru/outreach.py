@@ -4,7 +4,7 @@ from google.genai import types
 from api.dad.job import JobApplied
 from api.dad.outreach import OutreachContact
 from api.warren.config import Settings
-from api.waweru.prompt import SYSTEM_PROMPT
+from api.waweru.prompt import build_system_prompt
 
 
 def draft_outreach_email(job: JobApplied, contact: OutreachContact) -> tuple[str, str]:
@@ -25,7 +25,7 @@ BODY:
     response = client.models.generate_content(
         model="gemini-3.8-flash",
         contents=prompt,
-        config=types.GenerateContentConfig(system_instruction=SYSTEM_PROMPT),
+        config=types.GenerateContentConfig(system_instruction=build_system_prompt()),
     )
 
     text = response.text.strip()
