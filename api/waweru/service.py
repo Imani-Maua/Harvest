@@ -1,6 +1,7 @@
 import json
 import logging
 from datetime import datetime, timezone
+from typing import Generator
 
 from google import genai
 from google.genai import types
@@ -24,6 +25,10 @@ def _log(level: str, event: str, **kwargs) -> str:
     })
 
 
+def _sse(payload: dict) -> str:
+    return f"data: {json.dumps(payload)}\n\n"
+
+
 def _dispatch(fn_name: str, fn_args: dict, db: Session) -> str:
     if fn_name == "add_to_watchlist":
         result = add_to_watchlist(db=db, **fn_args)
@@ -36,33 +41,32 @@ def _dispatch(fn_name: str, fn_args: dict, db: Session) -> str:
     return json.dumps(result)
 
 
-def chat(conversation_id: int | None, user_message: str, db: Session) -> dict:
+def _get_or_create_conversation(conversation_id: int | None, db: Session) -> Conversation:
+    if conversation_id:
+        convo = db.query(Conversation).filter(Conversation.id == conversation_id).first()
+        if convo:
+            return convo
+    convo = Conversation()
+    db.add(convo)
+    db.flush()
+    return convo
+
+
+def chat_stream(conversation_id: int | None, user_message: str, db: Session) -> Generator[str, None, None]:
     settings = Settings()
     client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
-    # Load or create conversation
-    if conversation_id:
-        convo = db.query(Conversation).filter(Conversation.id == conversation_id).first()
-        if not convo:
-            convo = Conversation()
-            db.add(convo)
-            db.flush()
-    else:
-        convo = Conversation()
-        db.add(convo)
-        db.flush()
+    convo = _get_or_create_conversation(conversation_id, db)
 
-    # Build history for Gemini
     history = [
         types.Content(role=msg.role, parts=[types.Part(text=msg.content)])
         for msg in convo.messages
     ]
 
-    # Persist user message
     db.add(Message(conversation_id=convo.id, role="user", content=user_message))
     db.flush()
 
-    logger.info(_log("info", "chat_turn_started", conversation_id=convo.id))
+    logger.info(_log("info", "chat_stream_started", conversation_id=convo.id))
 
     tools = [types.Tool(function_declarations=[
         types.FunctionDeclaration(**fd) for fd in FUNCTION_DECLARATIONS
@@ -77,34 +81,55 @@ def chat(conversation_id: int | None, user_message: str, db: Session) -> dict:
         history=history,
     )
 
-    response = chat_session.send_message(user_message)
+    full_reply = ""
 
-    reply_text = ""
-    for part in response.candidates[0].content.parts:
-        if part.function_call:
-            fc = part.function_call
-            fn_name = fc.name
-            fn_args = dict(fc.args)
-            logger.info(_log("info", "function_call", function=fn_name))
-            fn_result = _dispatch(fn_name, fn_args, db)
-            follow_up = chat_session.send_message(
+    try:
+        stream = chat_session.send_message_stream(user_message)
+
+        pending_fn_call = None
+        pending_fn_name = None
+        pending_fn_args = None
+
+        for chunk in stream:
+            if not chunk.candidates:
+                continue
+            for part in chunk.candidates[0].content.parts:
+                if part.function_call:
+                    pending_fn_call = part.function_call
+                    pending_fn_name = part.function_call.name
+                    pending_fn_args = dict(part.function_call.args)
+                elif part.text:
+                    full_reply += part.text
+                    yield _sse({"token": part.text})
+
+        # Handle function call after stream completes
+        if pending_fn_call:
+            logger.info(_log("info", "function_call", function=pending_fn_name))
+            fn_result = _dispatch(pending_fn_name, pending_fn_args, db)
+
+            follow_stream = chat_session.send_message_stream(
                 types.Part(
                     function_response=types.FunctionResponse(
-                        name=fn_name,
+                        name=pending_fn_name,
                         response={"result": fn_result},
                     )
                 )
             )
-            reply_text = follow_up.text
-        elif part.text:
-            reply_text += part.text
+            for chunk in follow_stream:
+                if not chunk.candidates:
+                    continue
+                for part in chunk.candidates[0].content.parts:
+                    if part.text:
+                        full_reply += part.text
+                        yield _sse({"token": part.text})
 
-    if not reply_text:
-        reply_text = response.text
+        db.add(Message(conversation_id=convo.id, role="model", content=full_reply))
+        db.commit()
 
-    # Persist model reply
-    db.add(Message(conversation_id=convo.id, role="model", content=reply_text))
-    db.commit()
+        logger.info(_log("info", "chat_stream_complete", conversation_id=convo.id))
+        yield _sse({"conversation_id": convo.id, "done": True})
 
-    logger.info(_log("info", "chat_turn_complete", conversation_id=convo.id))
-    return {"conversation_id": convo.id, "reply": reply_text}
+    except Exception as exc:
+        logger.error(_log("error", "chat_stream_failed", error=str(exc)))
+        db.rollback()
+        yield _sse({"error": str(exc), "done": True})
