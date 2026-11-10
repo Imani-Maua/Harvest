@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from api.dad.conversation import Conversation, Message
 from api.warren.config import Settings
-from api.waweru.prompt import SYSTEM_PROMPT
+from api.waweru.prompt import build_system_prompt
 from api.waweru.functions import FUNCTION_DECLARATIONS, add_to_watchlist, get_watchlist, find_contacts_and_draft_email
 
 logger = logging.getLogger(__name__)
@@ -71,7 +71,7 @@ def chat(conversation_id: int | None, user_message: str, db: Session) -> dict:
     chat_session = client.chats.create(
         model="gemini-3.8-flash",
         config=types.GenerateContentConfig(
-            system_instruction=SYSTEM_PROMPT,
+            system_instruction=build_system_prompt(),
             tools=tools,
         ),
         history=history,
