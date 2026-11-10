@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from api.dad.conversation import Conversation, Message
 from api.warren.config import Settings
 from api.waweru.prompt import build_system_prompt
-from api.waweru.functions import FUNCTION_DECLARATIONS, add_to_watchlist, get_watchlist, find_contacts_and_draft_email
+from api.waweru.functions import FUNCTION_DECLARATIONS, add_to_watchlist, get_watchlist, find_contacts_and_draft_email, get_my_profile
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +44,9 @@ def _sse(payload: dict) -> str:
 
 
 def _dispatch(fn_name: str, fn_args: dict, db: Session) -> str:
-    if fn_name == "add_to_watchlist":
+    if fn_name == "get_my_profile":
+        result = get_my_profile(db=db)
+    elif fn_name == "add_to_watchlist":
         result = add_to_watchlist(db=db, **fn_args)
     elif fn_name == "get_watchlist":
         result = get_watchlist(db=db)
