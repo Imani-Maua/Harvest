@@ -147,6 +147,23 @@
 
 **Next time:** When adding a `TYPE_CHECKING`-only import that is referenced in a class body annotation, also add `from __future__ import annotations` to the same file at the same time.
 
+## Run: conversation endpoints + frontend brief + Gmail verified (2026-11-10)
+
+**Did:** Added `GET /harvest/conversations` and `GET /harvest/conversations/{id}` endpoints with Pydantic response models. Wrote complete frontend brief for the frontend engineer covering auth, all four pages, and the SSE streaming pattern in full. Diagnosed and confirmed Gmail API is not usable yet — `GMAIL_CLIENT_ID` and `GMAIL_CLIENT_SECRET` were blank in `.env`; Elaine filled them in from `credentials.json`. Gmail is now fully wired.
+
+**Read:** `api/waweru/routes.py`, `api/waweru/service.py`, `api/waweru/functions.py`, `api/waweru/prompt.py`, `api/waweru/outreach.py`, `api/dad/conversation.py`, `api/dad/job.py`, `api/dad/enums.py`, `api/elaine/internal/routes.py`, `api/elaine/internal/schema.py`, `api/eleanor/routes.py`, `api/eleanor/new_jobs/ingestion.py`, `api/daisy/routes.py`, `api/wayne/jobs_applied/schema.py`, `api/warren/gmail/service.py`, `api/warren/config.py`, `.env`, `building_docs/checklist.md`.
+
+**Changed (1 commit):**
+- `api/waweru/routes.py` — `65349a1` — added `GET /harvest/conversations` and `GET /harvest/conversations/{id}` with `ConversationSummaryOut` and `ConversationDetailOut` response models
+
+**External sources:** None.
+
+**Assumed:** `building_docs/` is intentionally gitignored — the frontend brief was written there and not committed. Candidate ID is always 1.
+
+**Missing:** Elaine's actual work history, project details, salary expectations, and profile data — needed to seed the DB. Frontend engineer's palette was not shared; she already has it.
+
+**Next time:** To seed the profile, provide a Bearer token (from Swagger login). To build Harvest memory, just say go.
+
 ## Run: wayne/ module + dad/ job models (2026-11-09)
 
 **Did:** Added `JobStatus` enum, two ORM models (`JobApplied`, `Network`), and a full `wayne/` feature module with CRUD endpoints for both tables, wired into the FastAPI app.
