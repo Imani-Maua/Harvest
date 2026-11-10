@@ -1,0 +1,31 @@
+{
+  "info": {
+    "name": "Harvest — Eleanor",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key": "base_url", "value": "http://localhost:8000", "type": "string"},
+    {"key": "access_token", "value": "", "type": "string"}
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{"key": "token", "value": "{{access_token}}", "type": "string"}]
+  },
+  "item": [
+    {
+      "name": "Jobs",
+      "item": [
+        {
+          "name": "Ingest Jobs",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/eleanor/jobs/ingest",
+            "description": "Triggers the job ingestion pipeline. Fetches listings from all configured adapters, deduplicates, checks sponsorship eligibility, and persists new jobs to the database."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

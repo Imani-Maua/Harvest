@@ -1,0 +1,170 @@
+{
+  "info": {
+    "_postman_id": "harvest-auth-collection-v1",
+    "name": "Harvest — Auth",
+    "description": "Authentication endpoints for Harvest. Set `base_url` and `login_secret` before using. The Login request auto-saves the returned token to `access_token`.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "login_secret",
+      "value": "",
+      "type": "string",
+      "description": "Value of LOGIN_SECRET from .env — appended to /auth/login?key="
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string",
+      "description": "Populated automatically after a successful login"
+    }
+  ],
+  "item": [
+    {
+      "name": "Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    const body = pm.response.json();",
+              "    pm.collectionVariables.set('access_token', body.access_token);",
+              "    pm.test('token saved', () => pm.expect(body.access_token).to.be.a('string'));",
+              "    pm.test('token_type is bearer', () => pm.expect(body.token_type).to.eql('bearer'));",
+              "    pm.test('firstname present', () => pm.expect(body.firstname).to.be.a('string'));",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/auth/login?key={{login_secret}}",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "login"],
+          "query": [
+            {
+              "key": "key",
+              "value": "{{login_secret}}"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"your@email.com\",\n  \"password\": \"your-password\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "description": "Login with email + password. Requires `?key={{login_secret}}` — wrong or missing key returns 404. On success, `access_token` is saved to collection variables."
+      },
+      "response": []
+    },
+    {
+      "name": "Me",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test('id present', () => pm.expect(body.id).to.be.a('number'));",
+              "pm.test('email present', () => pm.expect(body.email).to.be.a('string'));",
+              "pm.test('firstname present', () => pm.expect(body.firstname).to.be.a('string'));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/auth/me",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "me"]
+        },
+        "description": "Returns the currently authenticated user. Requires a valid Bearer token."
+      },
+      "response": []
+    },
+    {
+      "name": "Set New Password",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test('success message', () => pm.expect(body.message).to.include('updated'));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/auth/set_new_password",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "set_new_password"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"current_password\": \"current-password\",\n  \"new_password\": \"new-password\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "description": "Change password. Must supply the correct `current_password`. After success, re-login to get a fresh token."
+      },
+      "response": []
+    }
+  ]
+}

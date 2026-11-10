@@ -1,0 +1,168 @@
+{
+  "info": {
+    "name": "Harvest — Wayne",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key": "base_url", "value": "http://localhost:8000", "type": "string"},
+    {"key": "access_token", "value": "", "type": "string"},
+    {"key": "job_id", "value": "", "type": "string"},
+    {"key": "network_id", "value": "", "type": "string"}
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{"key": "token", "value": "{{access_token}}", "type": "string"}]
+  },
+  "item": [
+    {
+      "name": "Jobs Applied",
+      "item": [
+        {
+          "name": "Create Job",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.id) { pm.collectionVariables.set('job_id', res.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": "{{base_url}}/jobs-applied",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"company\": \"Acme Corp\",\n  \"job_title\": \"Senior Software Engineer\",\n  \"job_status\": \"watch_list\",\n  \"location\": \"London, UK\",\n  \"job_url\": \"https://acme.com/jobs/senior-swe\",\n  \"notes\": \"Interesting role, good tech stack\"\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Jobs",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/jobs-applied"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Job",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/jobs-applied/{{job_id}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Job",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": "{{base_url}}/jobs-applied/{{job_id}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"job_status\": \"applied\",\n  \"applied_date\": \"2026-11-09\",\n  \"notes\": \"Applied via company website\"\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Job",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/jobs-applied/{{job_id}}"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Network",
+      "item": [
+        {
+          "name": "Create Network Contact",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.id) { pm.collectionVariables.set('network_id', res.id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": "{{base_url}}/network",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"job_applied_id\": {{job_id}},\n  \"hiring_manager\": \"alex.johnson@acme.com\",\n  \"hiring_name\": \"Alex Johnson\",\n  \"technical_recruiter\": \"sarah.recruiter@acme.com\",\n  \"technical_name\": \"Sarah Recruiter\",\n  \"peers\": [],\n  \"peer_name\": null\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Network Contact",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/network/{{network_id}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Network by Job",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/network/by-job/{{job_id}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Contacts by Company",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/network/by-company/Acme Corp",
+              "host": ["{{base_url}}"],
+              "path": ["network", "by-company", "Acme Corp"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Network Contact",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": "{{base_url}}/network/{{network_id}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hiring_name\": \"Alex J. Johnson\",\n  \"peers\": [\"peer.one@acme.com\"]\n}",
+              "options": {"raw": {"language": "json"}}
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Network Contact",
+          "request": {
+            "method": "DELETE",
+            "url": "{{base_url}}/network/{{network_id}}"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+building_docs/
+venv/
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+credentials.json
