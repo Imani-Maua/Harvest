@@ -1,0 +1,101 @@
+# Commit Instructions
+
+Follow these rules for **every Git commit** made in this project.
+
+In this document, "you" is the AI agent and "I" is the person you are working for.
+
+## 1. One file per commit
+
+- Make exactly **one commit at a time**.
+- Each commit must contain changes to **one file only**.
+- Do not combine changes from multiple files into a single commit.
+- If a task requires changes to multiple files, commit each file separately, one after another.
+- Stage only the file you are committing. Do not use `git add .` or `git add -A`.
+
+## 2. Short, descriptive commit messages
+
+- Every commit message must briefly explain what the specific file does or what you changed in it.
+- Keep messages concise, clear, and meaningful.
+- If it a new feature, or a new addition, the commit message starts with `feat:xxxx`
+- If it is a fix, the commit message starts with `fix:xxx`
+- If it is a documentation, the commitmessage starts with `docs:xxx`
+- Avoid vague messages such as `updates`, `changes`, `fixes`, or `work in progress`.
+- Describe the actual change, not the entire feature you are implementing.
+
+Examples:
+
+- `Add user profile database model`
+- `Create JWT authentication utilities`
+- `Add database connection configuration`
+- `Define user registration request schema`
+
+## 3. No AI attribution
+
+- Do not identify yourself or any other AI tool as a contributor to the project.
+- Do not add AI attribution to commit messages, commit authorship, co-author trailers, source-code comments, documentation, or project metadata.
+- Do not modify the Git author or committer identity to identify yourself as an AI.
+- Preserve the repository's existing Git identity configuration.
+
+## 4. Verify every commit
+
+Before committing:
+
+1. Check `git status`.
+2. Confirm that only the intended file is staged.
+3. Review the staged changes using `git diff --cached`.
+4. Commit that single file with a concise, descriptive message.
+5. Verify the commit before you move on to the next file.
+
+---
+
+**These instructions are mandatory. Do not sacrifice this commit structure for convenience or speed.**
+
+## 5. Before building: understand the task and read it back to me
+
+Do not start any building (writing code, creating or editing files, running commands that change anything) until you have read the following back to me in your own words:
+
+1. **Goal:** What you are trying to accomplish.
+2. **Work environment:** The repo, language, tools, and constraints you are working in.
+3. **Instructions:** What I have told you to do, and what I have told you not to do.
+4. **Context:** The information, files, and background I have given you.
+5. **Gaps:** Anything you do not understand, or that is missing or ambiguous.
+6. **Too generic:** Any part of my request that is generic rather than specific to this project, where you would be guessing or falling back on defaults.
+
+Then wait for my confirmation before you build.
+
+### 5.1 During building, always run your tasks in the background.
+
+## 6. After every run: give me a short audit log
+
+At the end of every run, give me a short TL;DR audit log. Keep it brief, with no long explanations. Its purpose is to show me where I am not giving you enough to get the result I want.
+
+- **Did:** What you did, in one or two lines.
+- **Read:** The files, docs, and instructions you read.
+- **Changed:** The files you changed and the commits you made.
+- **External sources:** Any outside information you gathered, and what we agreed to keep or discard.
+- **Assumed:** Anything you guessed or filled in with defaults.
+- **Missing:** What you lacked or found unclear.
+- **Next time:** What I should give you so you can do this the way I want.
+
+Write this audit log within .claude/AUDIT.md
+
+## 7. External information: review it with me before you use it
+
+This applies to anything that comes from outside the project: web search, deep research, fetched pages, documentation, packages, code snippets from the internet, and API responses.
+
+Not all external information is correct. Do not put any of it into the codebase (code, config, comments, documentation, or dependencies) until you have gone through it with me.
+
+1. **Stop and report.** After gathering information, stop and tell me what you found, where each piece came from, and what you think it means for this project.
+2. **Flag doubt.** Tell me what is unverified, outdated, from a weak source, or in conflict with another source. Do not present uncertain information as fact.
+3. **Wait for my input.** I will tell you what the information means to us, where it will be used, and which parts are not useful.
+4. **Decide with me.** Agree with me on what stays and what is discarded. For everything that stays, agree on how it will be used and where it fits in the workflow.
+5. **Use only what we agreed.** Once I confirm, use only the parts we kept, and only in the way we agreed.
+
+"Assumed: No live DB available, so migration was written by hand rather than autogenerated" You said this to me. Don't ever do this again. You run migrations the right way always. If you cannot stop and flag that. 
+
+If part of your workflow touches the database as in it adds or edits tables in the database, run your own migration correctly, never by hand. If you cannot, stop and flag so that we find out what the issue is.
+
+Please do not add authentication/ and core/ and redis/ back into this file system, I removed it for a reason
+
+
+All the services where an action happens or points of failure all need structured logging
