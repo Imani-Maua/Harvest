@@ -69,7 +69,7 @@ def chat(conversation_id: int | None, user_message: str, db: Session) -> dict:
     ])]
 
     chat_session = client.chats.create(
-        model="gemini-2.0-flash",
+        model="gemini-2.5-flash",
         config=types.GenerateContentConfig(
             system_instruction=SYSTEM_PROMPT,
             tools=tools,
